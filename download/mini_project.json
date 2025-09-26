@@ -1,0 +1,352 @@
+{
+  "name": "Mini_Project",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mini-project-esp32-n8n",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7fac1413-4dd8-4eff-b085-51c5fe6d6102",
+      "name": "Webhook",
+      "webhookId": "2a8e8434-ce61-4496-8721-50443a5ececc",
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "yXvWY2YyCrRNTLzJ",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst bangkokNow = new Date(now.getTime() + 7 * 60 * 60 * 1000); // บวก 7 ชั่วโมง\n\nconst yyyy = bangkokNow.getFullYear();\nconst mm = String(bangkokNow.getMonth() + 1).padStart(2, '0');\nconst dd = String(bangkokNow.getDate()).padStart(2, '0');\nconst today = `${yyyy}-${mm}-${dd}`;\n\nconst dateThai = new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: '2-digit' })\n    .format(bangkokNow);\n\nconst timeThai = `${bangkokNow.getHours().toString().padStart(2,'0')}:${bangkokNow.getMinutes().toString().padStart(2,'0')} น.`;\n\nreturn [{\n  json: {\n    sheetId: '1FOugLs1U38ivwW-2wkyqNEHL9bPUhllb6J3lt5Iwab8',\n    sheetName: today,\n    dateThai,\n    time: timeThai,\n    ...$input.first().json.body\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        0
+      ],
+      "id": "7a627655-f443-4f46-a828-b8ea9cfaca62",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheetId }}",
+          "mode": "id"
+        },
+        "title": "={{ $json.sheetName }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        640,
+        0
+      ],
+      "id": "eba0b58c-9c6e-433c-abe9-2999ad6cd21f",
+      "name": "Create sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "O2Z0y44olemXFAXJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Code in JavaScript').item.json.sheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $('Code in JavaScript').item.json.sheetName }}"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "วันที่",
+              "displayName": "วันที่",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "องศา",
+              "displayName": "องศา",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ความชื่น",
+              "displayName": "ความชื่น",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "เวลา",
+              "displayName": "เวลา",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1088,
+        0
+      ],
+      "id": "dca33e3a-d9a8-4833-8306-b150014f5bdc",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "O2Z0y44olemXFAXJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab9bab67-9879-4804-a56b-a1eef710c844",
+              "name": "วันที่",
+              "value": "={{ $('Code in JavaScript').item.json.dateThai }}",
+              "type": "string"
+            },
+            {
+              "id": "889584f0-37fc-4dc5-b4bd-d8db4a91f1b3",
+              "name": "องศา",
+              "value": "={{ $('Code in JavaScript').item.json.temperature }}°C",
+              "type": "string"
+            },
+            {
+              "id": "fe148105-ec45-417b-9422-752b66e1c79a",
+              "name": "ความชื้น",
+              "value": "={{ $('Code in JavaScript').item.json.humidity }}%",
+              "type": "string"
+            },
+            {
+              "id": "a9c9780c-435b-42ca-bde2-0e98abff0e14",
+              "name": "ค่าแก๊ส",
+              "value": "={{ $('Code in JavaScript').item.json.gas }}/4095",
+              "type": "string"
+            },
+            {
+              "id": "770df036-2614-46fd-b4b6-7d91452ffea7",
+              "name": "เวลา",
+              "value": "={{ $('Code in JavaScript').item.json.time }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        0
+      ],
+      "id": "e13b5e07-e03c-4bd9-a952-aa0725c6c7f6",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "alert",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        192
+      ],
+      "id": "2508735e-9043-489e-b5fa-2acf4b9a80cb",
+      "name": "Webhook1",
+      "webhookId": "f5a413a0-a3a1-49c4-900f-bbaf4eeeaef4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "yXvWY2YyCrRNTLzJ",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b36d9b8b-a1e8-4e5d-8449-fe20da9954b9",
+              "name": "caption",
+              "value": "=🚨 <b>ALERT: ตรวจพบสภาวะผิดปกติ!</b> 🚨\n\n━━━━━━━━━━━━━━━━━━\n🌡️ <b>อุณหภูมิที่วัดได้:</b> <code>{{ $json.body.temperature }}°C</code> 🔥  \n⚠️ <b>เกณฑ์:</b> <code>50°C</code>\n\n💨 <b>ค่าแก๊สที่วัดได้:</b> <code>{{ $json.body.gas }}/4095</code> 🌫️  \n⚠️ <b>เกณฑ์:</b> <code>1000</code>\n\n━━━━━━━━━━━━━━━━━━\n📊 <b>สถานะ:</b> <code>DANGER</code>  \n🛠️ <b>Sensor:</b> <code>ESP32 - [DHT22, MQ-2]</code>  \n📍 <b>ตำแหน่ง:</b> <code>Server Room A</code>\n━━━━━━━━━━━━━━━━━━\n\n⚡ โปรดตรวจสอบโดยด่วน!\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        192
+      ],
+      "id": "176c8c3c-eeb4-4d96-ae12-857da6e0435d",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "sendAnimation",
+        "chatId": "-1003169425165",
+        "file": "https://i.pinimg.com/originals/f7/71/e9/f771e93c26b66a17eaa3495813fab033.gif",
+        "additionalFields": {
+          "caption": "={{ $json.caption }}",
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        192
+      ],
+      "id": "dcd1fbd4-8b2e-4904-b088-f3da6f3f2e21",
+      "name": "Send an animated file",
+      "webhookId": "6b8c6a2a-ea07-45e9-acbc-ec68293a08f0",
+      "credentials": {
+        "telegramApi": {
+          "id": "vczKlsg5qZAgoDcj",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Send an animated file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a49098eb-817a-4be6-a91b-9d34df9c39e6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dd4becd6fd693d5d8e7e84f114325028f1b233ed8e50b4159d6227c7a4eff677"
+  },
+  "id": "XHr6iI8h64nH5DGy",
+  "tags": []
+}
