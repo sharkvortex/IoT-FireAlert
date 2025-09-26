@@ -30,7 +30,8 @@ _ภาพแสดงการเชื่อมต่อวงจร ESP32 ก
 
 ## 🖼 รูปตัวอย่าง Flow n8n
 
-[ดาวน์โหลด Flow n8n](https://raw.githubusercontent.com/sharkvortex/IoT-FireAlert/main/download/mini_project.json)
+[ดาวน์โหลด Flow n8n](<a href="https://raw.githubusercontent.com/sharkvortex/IoT-FireAlert/main/download/mini_project.json" download>ดาวน์โหลด Flow n8n</a>
+)
 
 ![n8n Flow Diagram](https://raw.githubusercontent.com/sharkvortex/IoT-FireAlert/main/images/n8n.png)  
 _ภาพแสดง Workflow ของ n8n สำหรับ IoT-FireAlert_
